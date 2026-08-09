@@ -9,5 +9,6 @@ before_install:
 
 script:
   - mkdir -p out
-  - javac -cp "lib/*" -d out $(find src -name "*.java")
-  - java -cp "out:lib/*" org.junit.runner.JUnitCore com.pearlgifts.inventario.com.pearlgifts.inventario.util.PasswordUtilTest
+  - javac -cp "lib/*" -d out $(find src/main -name "*.java")
+  - javac -cp "lib/*:out" -d out $(find src/test -name "*.java")
+  - java -cp "out:lib/*" org.junit.runner.JUnitCore com.pearlgifts.inventario.util.PasswordUtilTest
