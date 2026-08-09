@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ develop, master ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Descargar dependencias (JUnit, Hamcrest)
+        run: |
+          mkdir -p lib
+          wget -O lib/junit-4.13.2.jar https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
+          wget -O lib/hamcrest-core-1.3.jar https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar
+
+      - name: Compilar codigo fuente
+        run: |
+          mkdir -p out
+          javac -cp "lib/*" -d out $(find src/main -name "*.java")
+
+      - name: Compilar y ejecutar pruebas
+        run: |
+          javac -cp "lib/*:out" -d out $(find src/test -name "*.java")
+          java -cp "out:lib/*" org.junit.runner.JUnitCore com.pearlgifts.inventario.util.PasswordUtilTest
